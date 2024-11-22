@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentPage = 1;
     const perPage = 10;
     let searchQuery = "";
-  
+//   fetching data
     
     const fetchTransactions = async () => {
       const month = monthSelect.value;
