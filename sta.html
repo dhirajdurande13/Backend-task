@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transaction Statistics</title>
+  <style>
+    /* Basic styling for the statistics box */
+    .stats-box {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px;
+      background-color: #f4f4f4;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .stat {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .dropdown {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Dropdown to select month -->
+  <select id="month-dropdown" class="dropdown">
+    <option value="1">January</option>
+    <option value="2">February</option>
+    <option value="3" selected>March</option>
+    <option value="4">April</option>
+    <option value="5">May</option>
+    <option value="6">June</option>
+    <option value="7">July</option>
+    <option value="8">August</option>
+    <option value="9">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+  </select>
+
+  <!-- Stats Box -->
+  <div class="stats-box" id="stats-box">
+    <div class="stat">
+      <h3>Total Sale Amount</h3>
+      <p id="total-sale-amount">$0.00</p>
+    </div>
+    <div class="stat">
+      <h3>Total Sold Items</h3>
+      <p id="total-sold-items">0</p>
+    </div>
+    <div class="stat">
+      <h3>Total Not Sold Items</h3>
+      <p id="total-not-sold-items">0</p>
+    </div>
+  </div>
+
+  <script>
+    // Function to fetch statistics data for the selected month
+    async function fetchStatistics(month) {
+      try {
+        const url = `http://localhost:5500/statistics?month=${month}`;  // Your API URL
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(data);
+        console.log(data.statistics);
+        if (data && data.statistics) {
+          const { totalSaleAmount, totalSoldItems, totalNotSoldItems } = data.statistics;
+          console.log(totalNotSoldItems);
+          // Update the statistics in the UI
+          document.getElementById('total-sale-amount').textContent = `$${totalSaleAmount.toFixed(2)}`;
+          document.getElementById('total-sold-items').textContent = totalSoldItems;
+          document.getElementById('total-not-sold-items').textContent = totalNotSoldItems;
+        } else {
+          console.error('Error: Invalid data returned from API');
+        }
+      } catch (error) {
+        console.error('Error fetching statistics:', error);
+      }
+    }
+
+    // Event listener for dropdown change
+    document.getElementById('month-dropdown').addEventListener('change', (event) => {
+      const selectedMonth = event.target.value;
+      fetchStatistics(selectedMonth);  // Fetch statistics for the selected month
+    });
+
+    // Initial fetch for the default month (March)
+    fetchStatistics(3);
+  </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transactions Table</title>
+  <link rel="stylesheet" href="trasaction.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Transactions for Selected Month</h1>
+
+    
+    <div class="filter">
+      <label for="month">Select Month:</label>
+      <select id="month" name="month">
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3" selected>March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+      </select>
+    </div>
+
+   
+    <div class="search-box">
+      <label for="search">Search Transaction:</label>
+      <input type="text" id="search" placeholder="Search by title, description, or price">
+    </div>
+
+    
+    <table id="transactions-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Category</th>
+          <th>Sold</th>
+          <th>Date of Sale</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    
+    <div class="pagination">
+      <button id="prev" disabled>Previous</button>
+      <button id="next">Next</button>
+    </div>
+  </div>
+
+  <script src="transaction.js"></script>
+</body>
+</html>

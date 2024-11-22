@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions Bar Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #barChart {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .chart-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Transactions Bar Chart</h1>
+            <p>Select a month to view the transactions by price range.</p>
+
+            <select id="monthDropdown" onchange="onMonthChange(event)">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="barChart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <p>Error: Unable to fetch data.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let chartInstance = null;  // Global variable to hold the chart instance
+
+async function fetchBarChartData(month) {
+    try {
+        const response = await fetch(`http://localhost:5500/combinedAPI?month=${month}`);
+        const data = await response.json();
+
+        if (data && data.barChartData) {
+            const barChartData = data.barChartData;
+            const labels = barChartData.map(item => item.priceRange);
+            const itemCounts = barChartData.map(item => item.itemCount);
+
+            renderBarChart(labels, itemCounts);  // Call render function
+        } else {
+            showError('No data available for this month.');
+        }
+    } catch (error) {
+        console.error('Error fetching bar chart data:', error);
+        showError('Failed to fetch data.');
+    }
+}
+
+function renderBarChart(labels, itemCounts) {
+    const ctx = document.getElementById('barChart').getContext('2d');
+
+    // If there's already a chart instance, destroy it first
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    // Create a new chart
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Items in Price Range',
+                data: itemCounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function showError(message) {
+    const errorMessageElement = document.getElementById('errorMessage');
+    errorMessageElement.textContent = message;
+    errorMessageElement.style.display = 'block';
+}
+
+function onMonthChange(event) {
+    const selectedMonth = event.target.value;
+    document.getElementById('errorMessage').style.display = 'none'; // Hide error message
+    fetchBarChartData(selectedMonth); // Fetch data for the selected month
+}
+
+// Fetch initial data for March (default month)
+fetchBarChartData(3);
+
+    </script>
+
+</body>
+
+</html>
